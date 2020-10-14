@@ -40,7 +40,7 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     if (self = [super initWithStyle:UITableViewCellStyleDefault reuseIdentifier:reuseIdentifier]) {
-        self.selectionStyle = UITableViewCellSelectionStyleNone;        
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
         [self makeComponents];
         [self makeGesture];
     }
@@ -86,6 +86,11 @@
     [_headImageView addGestureRecognizer:gesture];
     [self.contentView addSubview:_headImageView];
     
+    self.headImageBgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 90, 90)];
+    self.headImageBgView.center = self.headImageView.center;
+    self.headImageBgView.userInteractionEnabled = false;
+    [self.contentView addSubview:self.headImageBgView];
+    
     //nicknamel
     _nameLabel = [[UILabel alloc] init];
     _nameLabel.backgroundColor = [UIColor clearColor];
@@ -103,7 +108,7 @@
     [_readButton setTitleColor:[NIMKit sharedKit].config.receiptColor forState:UIControlStateHighlighted];
     [_readButton setHidden:YES];
     [_readButton addTarget:self action:@selector(onPressReadButton:) forControlEvents:UIControlEventTouchUpInside];
-    [self.contentView addSubview:_readButton];
+//    [self.contentView addSubview:_readButton];
     
     //selectButton
     _selectButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -141,6 +146,9 @@
         [self.model updateLayoutConfig];
         [self refresh];
     }
+}
+- (void)refreshHeadImageBg:(NSString *)imgStr{
+    [self.headImageBgView sd_setImageWithURL:[NSURL URLWithString:imgStr]];
 }
 
 - (BOOL)checkData{
@@ -314,8 +322,10 @@
 {
     BOOL needShow = [self needShowAvatar];
     _headImageView.hidden = !needShow;
+    self.headImageBgView.hidden = !needShow;
     if (needShow) {
         _headImageView.frame = [self avatarViewRect];
+        self.headImageBgView.center = _headImageView.center;
     }
 }
 
@@ -348,7 +358,7 @@
     _replyedBubbleView.nim_size = size;
     
     UIEdgeInsets contentInsets = self.model.replyBubbleViewInsets;
-    CGFloat left = 0;
+    CGFloat left = contentInsets.left;
     CGFloat protraitRightToBubble = 5.f;
     if (!self.model.shouldShowLeft)
     {
@@ -375,7 +385,7 @@
     _bubbleView.nim_size = size;
     
     UIEdgeInsets contentInsets = self.model.bubbleViewInsets;
-    CGFloat left = 0;
+    CGFloat left = contentInsets.left;
     CGFloat protraitRightToBubble = 5.f;
     if (!self.model.shouldShowLeft)
     {
@@ -510,10 +520,6 @@
     }
 }
 
-- (void)disableLongPress:(BOOL)disable {
-    _longPressGesture.enabled = !disable;
-}
-
 #pragma mark - Action
 - (void)onRetryMessage:(id)sender
 {
@@ -574,7 +580,7 @@
     CGFloat cellWidth = self.bounds.size.width;
     CGFloat protraitImageWidth = [self avatarSize].width;
     CGFloat protraitImageHeight = [self avatarSize].height;
-    CGFloat selfProtraitOriginX = 0;
+    CGFloat selfProtraitOriginX = self.cellPaddingToAvatar.x;
     
     if (self.model.shouldShowLeft) {
         if (![self needShowSelectButton]) {
@@ -611,7 +617,11 @@
     {
         disable = [layoutConfig disableRetryButton:self.model];
     }
-    return disable;    
+    BOOL isUserInBlackList = [self.model.message.localExt[@"isUserInBlack"] boolValue];
+    if (( self.model.message.isBlackListed || isUserInBlackList) && self.model.message.isOutgoingMsg) {//如果是拉黑或者被拉黑 显示失败按钮
+        return false;
+    }
+    return disable;
 }
 
 - (CGFloat)retryButtonBubblePadding {
@@ -636,7 +646,7 @@
 
 
 - (BOOL)unreadHidden {
-    if (self.model.message.messageType == NIMMessageTypeAudio) 
+    if (self.model.message.messageType == NIMMessageTypeAudio)
     { //音频
         BOOL disable = NO;
         if ([self.delegate respondsToSelector:@selector(disableAudioPlayedStatusIcon:)]) {
@@ -725,5 +735,12 @@
     }
 }
 
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    UIView *originView = [super hitTest:point withEvent:event];
+    if (originView == self.headImageBgView) {
+        return nil;
+    }
+    return originView;
+}
 
 @end

@@ -22,13 +22,13 @@
 
 @interface UICollectionViewLayoutAttributes (LeftAligned)
 
-- (void)nim_leftAlignFrameWithSectionInset:(UIEdgeInsets)sectionInset;
+- (void)leftAlignFrameWithSectionInset:(UIEdgeInsets)sectionInset;
 
 @end
 
 @implementation UICollectionViewLayoutAttributes (LeftAligned)
 
-- (void)nim_leftAlignFrameWithSectionInset:(UIEdgeInsets)sectionInset
+- (void)leftAlignFrameWithSectionInset:(UIEdgeInsets)sectionInset
 {
     CGRect frame = self.frame;
     frame.origin.x = sectionInset.left;
@@ -64,7 +64,7 @@
     CGFloat layoutWidth = CGRectGetWidth(self.collectionView.frame) - sectionInset.left - sectionInset.right;
 
     if (isFirstItemInSection) {
-        [currentItemAttributes nim_leftAlignFrameWithSectionInset:sectionInset];
+        [currentItemAttributes leftAlignFrameWithSectionInset:sectionInset];
         return currentItemAttributes;
     }
 
@@ -82,7 +82,7 @@
 
     if (isFirstItemInRow) {
         // make sure the first item on a line is left aligned
-        [currentItemAttributes nim_leftAlignFrameWithSectionInset:sectionInset];
+        [currentItemAttributes leftAlignFrameWithSectionInset:sectionInset];
         return currentItemAttributes;
     }
 

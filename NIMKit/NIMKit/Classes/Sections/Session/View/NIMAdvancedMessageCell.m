@@ -10,6 +10,7 @@
 #import "UIView+NIM.h"
 #import "NIMMessageModel.h"
 #import "NSString+NIMKit.h"
+#import "NIMListAdapter.h"
 #import "NIMQuickCommentCell.h"
 #import "NIMSessionMessageContentView.h"
 #import "NIMAvatarImageView.h"
@@ -25,6 +26,8 @@ static NSString * const kNIMListCellReuseID = @"NIMQuickCommentCell";
 static const CGFloat kNIMAdvancedBackgroundPadding = 5;
 
 @interface NIMAdvancedMessageCell () <UICollectionViewDelegateFlowLayout, UICollectionViewDataSource>
+
+@property (nonatomic,strong) NIMListAdapter *adapter;
 
 @property (nonatomic,strong) NSArray *objects;
 
@@ -254,7 +257,16 @@ static const CGFloat kNIMAdvancedBackgroundPadding = 5;
         return;
     }
     
-    CGFloat left = 0;    
+    CGFloat left = 0;
+    if (!self.model.shouldShowLeft)
+    {
+        left = self.bubbleView.nim_left < self.emoticonsContainerView.nim_left ? self.bubbleView.nim_left : self.emoticonsContainerView.nim_left;
+    }
+    else
+    {
+        left = self.bubbleView.nim_left > self.emoticonsContainerView.nim_left ? self.bubbleView.nim_left : self.emoticonsContainerView.nim_left;
+    }
+    
     CGFloat protraitRightToBubble = 5.f;
     if (!self.model.shouldShowLeft)
     {

@@ -31,7 +31,7 @@
         _textLabel = [NIMKitQuickCommentUtil newCommentLabel];
         [self.contentView addSubview:_textLabel];
         self.layer.cornerRadius = 12.0;
-        self.backgroundColor = [UIColor colorWithWhite:0.7 alpha:0.3];
+        self.backgroundColor = [UIColor colorWithWhite:0.7 alpha:0.5];
         
         _divider = [[UIView alloc] initWithFrame:CGRectZero];
         _divider.backgroundColor = UIColor.lightGrayColor;

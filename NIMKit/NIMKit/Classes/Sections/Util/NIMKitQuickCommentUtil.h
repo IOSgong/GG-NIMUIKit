@@ -33,7 +33,7 @@ extern NSString * const NIMKitQuickCommentFormat;
 
 + (CGSize)containerSizeWithComments:(NSMapTable *)comments;
 
-+ (NIMQuickComment * _Nullable)myCommentFromComments:(NSInteger )keyIndex
++ (NIMQuickComment *)myCommentFromComments:(NSInteger )keyIndex
                                       keys:(NSArray *)keys
                                   comments:(NSMapTable *)map;
 

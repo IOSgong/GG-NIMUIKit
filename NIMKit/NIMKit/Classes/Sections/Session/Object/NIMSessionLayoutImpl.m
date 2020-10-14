@@ -74,8 +74,10 @@
     [self adjustTableView];
 }
 
-- (void)layoutAfterRefresh {
+- (void)layoutAfterRefresh
+{
     [self.refreshControl endRefreshing];
+    [self.tableView reloadData];
 }
 
 

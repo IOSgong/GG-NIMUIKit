@@ -323,7 +323,7 @@
 }
 
 #pragma mark - virtual function
-- (UIView *)didGetHeaderView { return [UIView new]; }
+- (UIView *)didGetHeaderView { return nil; }
 
 - (void)didBuildTeamMemberCell:(NIMTeamMemberListCell *)cell {}
 

@@ -85,6 +85,10 @@
     }
     self.navigationItem.leftBarButtonItems = @[leftItem];
     self.navigationItem.leftItemsSupplementBackButton = YES;
+    
+    //将导航栏底部的线变为空图片达到去除的目的
+    [self.navigationController.navigationBar setShadowImage:[[UIImage alloc]init]];
+
 }
 
 - (void)setupTableView
@@ -124,6 +128,7 @@
         [self.sessionInputView setInputActionDelegate:self];
         [self.sessionInputView refreshStatus:NIMInputStatusText];
         [self.view addSubview:_sessionInputView];
+
     }
 }
 
@@ -147,6 +152,9 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    if (self.sessionInputView.status == NIMInputStatusEmoticon) {
+        return;
+    }
     [self.sessionInputView endEditing:YES];
 }
 
@@ -177,7 +185,6 @@
 
 - (void)sendMessage:(NIMMessage *)message completion:(void(^)(NSError * err))completion
 {
-    __weak typeof(self) weakSelf = self;
     [self.interactor sendMessage:message
                         toMessage:nil
                       completion:^(NSError *err)
@@ -186,7 +193,7 @@
         {
             completion(err);
         }
-        [weakSelf cleanMenuMessage];
+        [self cleanMenuMessage];
     }];
 }
 
@@ -354,18 +361,6 @@
     [self.tableView reloadData];
 }
 
-// 远端消息清空回调
-- (void)onRecvAllRemoteMessagesInSessionDeleted:(NIMSessionDeleteAllRemoteMessagesInfo *)info
-{
-    [self refreshMessages];
-}
-
-// 远端消息批量删除删除回调
-- (void)onRecvMessagesDeleted:(NSArray<NIMMessage *> *)messages exts:(NSDictionary<NSString *,NSString *> *)exts
-{
-    [self refreshMessages];
-}
-
 - (void)didAddRecentSession:(NIMRecentSession *)recentSession
            totalUnreadCount:(NSInteger)totalUnreadCount{
     [self changeUnreadCount:recentSession totalUnreadCount:totalUnreadCount];
@@ -487,8 +482,6 @@
     NSString *numberStr = [array lastObject];
     NSInteger number = [numberStr integerValue];
     __block NIMQuickComment *newComment = [NIMCommentMaker commentWithType:number content:emoticon.tag ext:@"扩展"];
-    
-    __weak typeof(self) weakSelf = self;
     [self hadCommentThisMessage:self.messageForMenu type:number
                       compltion:^(NSMapTable *result)
      {
@@ -496,33 +489,33 @@
         BOOL contains = oldComment ? YES : NO;
         if (!contains)
         {
-            [weakSelf.interactor addQuickComment:newComment
+            [self.interactor addQuickComment:newComment
                                   completion:^(NSError *error)
             {
 //                [self.view hideToasts];
                 if (error)
                 {
-                    [weakSelf.view makeToast:@"操作失败".nim_localized duration:2 position:CSToastPositionCenter];
+                    [self.view makeToast:@"操作失败".nim_localized duration:2 position:CSToastPositionCenter];
                 }
                 
-                [weakSelf cleanMenuMessage];
-                [weakSelf.advanceMenu dismiss];
+                [self cleanMenuMessage];
+                [self.advanceMenu dismiss];
             }];
         }
         else
         {
-            [weakSelf.interactor delQuickComment:oldComment
-                                   targetMessage:weakSelf.messageForMenu
-                                      completion:^(NSError *error)
+            [self.interactor delQuickComment:oldComment
+                               targetMessage:self.messageForMenu
+                                  completion:^(NSError *error)
             {
 //                [self.view hideToasts];
                 if (error)
                 {
-                    [weakSelf.view makeToast:@"操作失败".nim_localized duration:2 position:CSToastPositionCenter];
+                    [self.view makeToast:@"操作失败".nim_localized duration:2 position:CSToastPositionCenter];
                 }
 
-                [weakSelf cleanMenuMessage];
-                [weakSelf.advanceMenu dismiss];
+                [self cleanMenuMessage];
+                [self.advanceMenu dismiss];
             }];
         }
     }];
@@ -651,7 +644,6 @@
                 comment:(NIMQuickComment *)comment
                selected:(BOOL)isSelected
 {
-    __weak typeof(self) weakSelf = self;
     if (isSelected)
     {
         [self.interactor delQuickComment:comment
@@ -663,7 +655,7 @@
             {
                 return;
             }
-            [weakSelf.view makeToast:@"操作失败".nim_localized duration:2 position:CSToastPositionCenter];
+            [self.view makeToast:@"操作失败".nim_localized duration:2 position:CSToastPositionCenter];
         }];
     }
     else
@@ -678,7 +670,7 @@
             {
                 return;
             }
-            [weakSelf.view makeToast:@"操作失败".nim_localized duration:2 position:CSToastPositionCenter];
+            [self.view makeToast:@"操作失败".nim_localized duration:2 position:CSToastPositionCenter];
         }];
     }
     
@@ -956,10 +948,6 @@
 - (void)refreshMessages
 {
     [self.interactor resetMessages:nil];
-}
-
-- (NSArray *)menusItems:(NIMMessage *)message {
-    return nil;
 }
 
 - (void)scrollToMessage:(NIMMessage *)message

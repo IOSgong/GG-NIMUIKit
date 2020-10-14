@@ -28,8 +28,8 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        [self.contentView addSubview:self.avatarView];
-        [self.contentView addSubview:self.nickLabel];
+        [self addSubview:self.avatarView];
+        [self addSubview:self.nickLabel];
     }
     return self;
 }

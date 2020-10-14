@@ -83,7 +83,7 @@ extern NSString *const NIMKitTeamInfoHasUpdatedNotification;
     return _languageBundle;
 }
 
-- (id<NIMChatUIManager>)chatUIManager
+- (id<NIMChatManager>)chatUIManager
 {
     return NIMChatUIManager.sharedManager;
 }

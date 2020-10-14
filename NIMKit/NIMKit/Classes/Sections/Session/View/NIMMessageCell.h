@@ -17,6 +17,10 @@
 @interface NIMMessageCell : UITableViewCell
 
 @property (nonatomic, strong) NIMAvatarImageView *headImageView;
+
+
+@property (nonatomic, strong) UIImageView *headImageBgView;
+
 @property (nonatomic, strong) UILabel *nameLabel;                                 //姓名
 @property (nonatomic, strong) UIImageView *bubblesBackgroundView;                  //气泡背景视图
 @property (nonatomic, strong) NIMSessionMessageContentView *replyedBubbleView;    //被回复内容区域
@@ -26,6 +30,9 @@
 @property (nonatomic, strong) UIButton *retryButton;                              //重试
 @property (nonatomic, strong) NIMBadgeView *audioPlayedIcon;                      //语音未读红点
 @property (nonatomic, strong) UIButton *readButton;                               //已读
+//送达已读标签
+@property (nonatomic, strong) UILabel *readStatusL;                               //已读
+
 @property (nonatomic, strong) UIButton *selectButton;                             //选择
 @property (nonatomic, strong) UIButton *selectButtonMask;                         //选择遮罩
 
@@ -34,5 +41,7 @@
 @property (nonatomic, weak)   id<NIMMessageCellDelegate> delegate;
 
 - (void)refreshData:(NIMMessageModel *)data;
+
+- (void)refreshHeadImageBg:(NSString *)imgStr;
 
 @end

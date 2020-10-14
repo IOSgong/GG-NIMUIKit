@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSBundle *)nim_defaultEmojiBundle;
 
-+ (nullable NSBundle *)nim_defaultLanguageBundle;
++ (NSBundle *)nim_defaultLanguageBundle;
 
 + (NSString *)nim_EmojiPlistFile;
 

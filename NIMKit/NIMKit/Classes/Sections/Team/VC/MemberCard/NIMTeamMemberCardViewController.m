@@ -130,7 +130,7 @@
                                SepLeftEdge   : @(0),
                                };
     
-    NSArray *rowContent = nil;
+    NSArray *rowContent = @[];
     if (_member.teamType == NIMTeamTypeSuper) {
         rowContent = @[headerItem, nickItem, userTypeItem, isMuteItem, kickItem];
     } else {

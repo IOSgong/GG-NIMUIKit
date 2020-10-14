@@ -50,7 +50,7 @@
 {
     NIMImageObject *imageObject = [[NIMImageObject alloc] initWithImage:image scene:NIMNOSSceneTypeMessage];
     NIMImageOption *option  = [[NIMImageOption alloc] init];
-    option.compressQuality  = 0.7;
+    option.compressQuality  = 1;
     imageObject.option      = option;
     return [NIMMessageMaker generateImageMessage:imageObject];
 }
@@ -76,6 +76,7 @@
     NIMMessage *message     = [[NIMMessage alloc] init];
     message.messageObject   = imageObject;
     message.apnsContent = @"发来了一张图片".nim_localized;
+    message.text = @"发来了一张图片".nim_localized;
     [self setupMessage:message];
     return message;
 }
@@ -96,12 +97,12 @@
 {
     message.apnsPayload = @{
         @"apns-collapse-id": message.messageId,
+        @"sessionId": message.session.sessionId ? message.session.sessionId : @"",
     };
     
     NIMMessageSetting *setting = [[NIMMessageSetting alloc] init];
     setting.scene = NIMNOSSceneTypeMessage;
     message.setting = setting;
-    message.env = [[NSUserDefaults standardUserDefaults] objectForKey:@"nim_test_msg_env"];
 }
 
 

@@ -38,7 +38,8 @@
         [_emoticonBtn setImage:[UIImage nim_imageInKit:@"icon_toolview_emotion_normal"] forState:UIControlStateNormal];
         [_emoticonBtn setImage:[UIImage nim_imageInKit:@"icon_toolview_emotion_pressed"] forState:UIControlStateHighlighted];
         [_emoticonBtn sizeToFit];
-        
+
+
         _moreMediaBtn = [UIButton buttonWithType:UIButtonTypeCustom];
         [_moreMediaBtn setImage:[UIImage nim_imageInKit:@"icon_toolview_add_normal"] forState:UIControlStateNormal];
         [_moreMediaBtn setImage:[UIImage nim_imageInKit:@"icon_toolview_add_pressed"] forState:UIControlStateHighlighted];
@@ -52,11 +53,14 @@
         [_recordButton sizeToFit];
         
         _inputTextBkgImage = [[UIImageView alloc] initWithFrame:CGRectZero];
-        [_inputTextBkgImage setImage:[[UIImage nim_imageInKit:@"icon_input_text_bg"] resizableImageWithCapInsets:UIEdgeInsetsMake(15,80,15,80) resizingMode:UIImageResizingModeStretch]];
+        _inputTextBkgImage.backgroundColor = [UIColor colorWithRed:247/255.0f green:248/255.0f blue:250/255.0f alpha:1.0f];
+        _inputTextBkgImage.layer.cornerRadius = 20;
+        _inputTextBkgImage.layer.masksToBounds = true;
+        [_inputTextBkgImage setImage:[[UIImage nim_imageInKit:@""] resizableImageWithCapInsets:UIEdgeInsetsMake(15,80,15,80) resizingMode:UIImageResizingModeStretch]];
         
         _inputTextView = [[NIMGrowingTextView alloc] initWithFrame:CGRectZero];
         _inputTextView.font = [UIFont systemFontOfSize:14.0f];
-        _inputTextView.maxNumberOfLines = _maxNumberOfInputLines?:4;
+        _inputTextView.maxNumberOfLines = _maxNumberOfInputLines?:1;
         _inputTextView.minNumberOfLines = 1;
         _inputTextView.textColor = [UIColor blackColor];
         _inputTextView.backgroundColor = [UIColor clearColor];
@@ -65,23 +69,24 @@
         _inputTextView.returnKeyType = UIReturnKeySend;
         
         //顶部分割线
-        UIView *sep = [[UIView alloc] initWithFrame:CGRectZero];
-        sep.backgroundColor = [UIColor lightGrayColor];
-        sep.nim_size = CGSizeMake(self.nim_width, .5f);
-        sep.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        [self addSubview:sep];
+//        UIView *sep = [[UIView alloc] initWithFrame:CGRectZero];
+//        sep.backgroundColor = [UIColor lightGrayColor];
+//        sep.nim_size = CGSizeMake(self.nim_width, .5f);
+//        sep.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+//        [self addSubview:sep];
         
         //底部分割线
         _bottomSep = [[UIView alloc] initWithFrame:CGRectZero];
-        _bottomSep.backgroundColor = [UIColor lightGrayColor];
+        _bottomSep.backgroundColor = [UIColor clearColor];
         [self addSubview:_bottomSep];
         
         self.types = @[
-                         @(NIMInputBarItemTypeVoice),
-                         @(NIMInputBarItemTypeTextAndRecord),
-                         @(NIMInputBarItemTypeEmoticon),
-                         @(NIMInputBarItemTypeMore),
+            @(NIMInputBarItemTypeVoice),
+            @(NIMInputBarItemTypeTextAndRecord),
+            @(NIMInputBarItemTypeEmoticon),
+            @(NIMInputBarItemTypeMore),
                        ];
+
     }
     return self;
 }
@@ -112,9 +117,9 @@
 - (CGSize)sizeThatFits:(CGSize)size
 {
     CGFloat viewHeight = 0.0f;
-    if (self.status == NIMInputStatusAudio) {
-        viewHeight = 54.5;
-    }else{
+//    if (self.status == NIMInputStatusAudio) {
+//        viewHeight = 40;
+//    }else{
         //算出 TextView 的宽度
         [self adjustTextViewWidth:size.width];
         // TextView 自适应高度
@@ -122,7 +127,7 @@
         viewHeight = (int)self.inputTextView.frame.size.height;
         //得到 ToolBar 自身高度
         viewHeight = viewHeight + 2 * self.spacing + 2 * self.textViewPadding;
-    }
+//    }
     
     return CGSizeMake(size.width,viewHeight);
 }
@@ -147,7 +152,7 @@
     
     if ([self.types containsObject:@(NIMInputBarItemTypeTextAndRecord)]) {
         self.inputTextBkgImage.nim_width  = self.inputTextView.nim_width  + 2 * self.textViewPadding;
-        self.inputTextBkgImage.nim_height = self.inputTextView.nim_height + 2 * self.textViewPadding;
+        self.inputTextBkgImage.nim_height = 40;
     }
     CGFloat left = 0;
     for (NSNumber *type in self.types) {
@@ -161,7 +166,7 @@
         view.nim_centerY = self.nim_height * .5f;
         left = view.nim_right;
     }
-    
+
     [self adjustTextAndRecordView];
     
     //底部分割线
@@ -175,7 +180,7 @@
 {
     if ([self.types containsObject:@(NIMInputBarItemTypeTextAndRecord)])
     {
-        self.inputTextView.center  = self.inputTextBkgImage.center;
+        self.inputTextView.center  = CGPointMake(self.inputTextBkgImage.center.x, self.inputTextBkgImage.center.y + 2);
         
         if (!self.inputTextView.superview)
         {
@@ -215,7 +220,7 @@
     self.status = status;
     [self sizeToFit];
     
-    if (status == NIMInputStatusText || status == NIMInputStatusMore)
+    if (status == NIMInputStatusText || status == NIMInputStatusMore || NIMInputStatusAudio)
     {
         [self.recordButton setHidden:YES];
         [self.inputTextView setHidden:NO];
@@ -223,14 +228,14 @@
         [self updateVoiceBtnImages:YES];
         [self updateEmotAndTextBtnImages:YES];
     }
-    else if(status == NIMInputStatusAudio)
-    {
-        [self.recordButton setHidden:NO];
-        [self.inputTextView setHidden:YES];
-        [self.inputTextBkgImage setHidden:YES];
-        [self updateVoiceBtnImages:NO];
-        [self updateEmotAndTextBtnImages:YES];
-    }
+//    else if(status == NIMInputStatusAudio)
+//    {
+//        [self.recordButton setHidden:NO];
+//        [self.inputTextView setHidden:YES];
+//        [self.inputTextBkgImage setHidden:YES];
+//        [self updateVoiceBtnImages:NO];
+//        [self updateEmotAndTextBtnImages:YES];
+//    }
     else
     {
         [self.recordButton setHidden:YES];
@@ -310,22 +315,25 @@
 - (UIView *)subViewForType:(NIMInputBarItemType)type{
     if (!_dict) {
         _dict = @{
-                  @(NIMInputBarItemTypeVoice) : self.voiceButton,
+            @(NIMInputBarItemTypeVoice) : self.voiceButton,
+
                   @(NIMInputBarItemTypeTextAndRecord)  : self.inputTextBkgImage,
-                  @(NIMInputBarItemTypeEmoticon) : self.emoticonBtn,
+            @(NIMInputBarItemTypeEmoticon) : self.emoticonBtn,
                   @(NIMInputBarItemTypeMore)     : self.moreMediaBtn
                 };
+
+
     }
     return _dict[@(type)];
 }
 
 - (CGFloat)spacing{
-    return 6.f;
+    return 10.f;
 }
 
 - (CGFloat)textViewPadding
 {
-    return 3.f;
+    return 5.f;
 }
 
 

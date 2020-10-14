@@ -55,7 +55,6 @@
     [super viewDidLayoutSubviews];
     CGSize size = [self.headerView sizeThatFits:CGSizeMake(self.view.nim_width, CGFLOAT_MAX)];
     self.headerView.nim_size = size;
-    self.tableView.tableHeaderView = self.headerView;
 }
 
 #pragma mark - Overload

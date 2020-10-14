@@ -41,6 +41,10 @@
 - (void)refresh:(NIMMessageModel *)data
 {
     [super refresh:data];
+    self.bubbleImageView.alpha = 0;
+    self.bubbleImageView.hidden =true;
+    
+
     _imageView.image = nil;
     NIMImageObject * imageObject = (NIMImageObject*)self.model.message.messageObject;
     

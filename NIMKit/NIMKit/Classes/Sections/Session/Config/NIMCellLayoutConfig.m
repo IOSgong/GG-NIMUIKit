@@ -33,7 +33,6 @@
     return cellContent.length ? cellContent : @"NIMSessionUnknowContentView";
 }
 
-
 - (UIEdgeInsets)contentViewInsets:(NIMMessageModel *)model{
     id<NIMSessionContentConfig>config = [[NIMSessionContentConfigFactory sharedFacotry] configBy:model.message];    
     return [config contentViewInsets:model.message];

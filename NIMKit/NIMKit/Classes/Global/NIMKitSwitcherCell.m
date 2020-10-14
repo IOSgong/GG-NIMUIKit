@@ -21,7 +21,7 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         _switcher = [[UISwitch alloc] initWithFrame:CGRectZero];
-        [self.contentView addSubview:_switcher];
+        [self addSubview:_switcher];
     }
     return self;
 }
